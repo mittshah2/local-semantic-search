@@ -122,7 +122,6 @@ function animate() {
 const searchInput = document.getElementById('search-input');
 const uiContainer = document.querySelector('.ui-container');
 const resultsContainer = document.getElementById('results-container');
-const statusText = document.getElementById('status-text');
 
 searchInput.addEventListener('keydown', async (e) => {
     if (e.key === 'Enter') {
@@ -179,25 +178,33 @@ function displayResults(results) {
     });
 }
 
-// --- Status Polling ---
+// --- Loading Screen ---
 
-function updateStatus() {
+const loadingScreen = document.getElementById('loading-screen');
+const loadingSubtext = document.querySelector('.loading-subtext');
+
+function checkReadyStatus() {
     if (window.pywebview && window.pywebview.api) {
         window.pywebview.api.get_status().then(status => {
             if (status) {
-                statusText.textContent = status;
-                if (status.toLowerCase().includes("error")) {
-                    statusText.className = 'status-text error';
-                } else {
-                    statusText.className = 'status-text';
+                // Update loading subtext
+                loadingSubtext.textContent = status;
+
+                // Hide loading screen when ready
+                if (status === "Ready" || status.startsWith("Ready")) {
+                    loadingScreen.classList.add('hidden');
+                    // Initialize Three.js scene after loading
+                    initThree();
                 }
             }
         });
     }
 }
 
-// Start polling every second
-setInterval(updateStatus, 1000);
-
-// Initialize
-initThree();
+// Poll for ready status
+const readyCheckInterval = setInterval(() => {
+    checkReadyStatus();
+    if (loadingScreen.classList.contains('hidden')) {
+        clearInterval(readyCheckInterval);
+    }
+}, 500);
