@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Semantic File Search</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+</head>
+
+<body>
+    <div id="canvas-container"></div>
+
+    <div class="ui-container">
+        <div class="search-container" id="search-container">
+            <input type="text" id="search-input" placeholder="Search files (e.g., 'system design')..."
+                autocomplete="off">
+            <div class="search-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
+            </div>
+            <div id="status-text" class="status-text"></div>
+        </div>
+
+        <div class="results-container" id="results-container">
+            <!-- Results will be injected here -->
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>

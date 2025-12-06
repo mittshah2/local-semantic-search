@@ -1,0 +1,7 @@
+pywebview
+torch
+transformers
+numpy
+sentence-transformers
+pywin32
+winshell

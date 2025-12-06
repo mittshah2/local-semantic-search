@@ -1,0 +1,151 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&display=swap');
+
+body {
+    margin: 0;
+    overflow: hidden;
+    background-color: #050510;
+    font-family: 'Outfit', sans-serif;
+    color: white;
+}
+
+#canvas-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+}
+
+.ui-container {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 80%;
+    max-width: 600px;
+    height: 70vh;
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    pointer-events: none;
+    /* Let clicks pass through to canvas if needed, but elements handle their own */
+}
+
+/* Glassmorphism Panel */
+.search-container {
+    position: relative;
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+    padding: 2px;
+    border-radius: 50px;
+    /* Highly curved edges */
+    pointer-events: auto;
+    transition: all 0.3s ease;
+    margin-bottom: 20px;
+}
+
+.search-container:focus-within {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(168, 85, 247, 0.5);
+    /* Purple tint */
+    box-shadow: 0 0 20px rgba(168, 85, 247, 0.2);
+}
+
+input[type="text"] {
+    width: 100%;
+    padding: 15px 50px 15px 25px;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: white;
+    font-size: 1.1rem;
+    font-family: 'Outfit', sans-serif;
+    box-sizing: border-box;
+}
+
+input[type="text"]::placeholder {
+    color: rgba(255, 255, 255, 0.4);
+}
+
+.search-icon {
+    position: absolute;
+    right: 25px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: rgba(255, 255, 255, 0.5);
+    pointer-events: none;
+}
+
+.status-text {
+    text-align: center;
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.5);
+    margin-top: 5px;
+    height: 1.2em;
+    /* Prevent layout shift */
+    pointer-events: auto;
+}
+
+.status-text.error {
+    color: #ff6b6b;
+}
+
+.results-container {
+    flex-grow: 1;
+    overflow-y: auto;
+    background: rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    padding: 10px;
+    pointer-events: auto;
+    display: none;
+    /* Hidden by default */
+}
+
+/* Scrollbar */
+.results-container::-webkit-scrollbar {
+    width: 8px;
+}
+
+.results-container::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.results-container::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
+}
+
+/* Result Items */
+.result-item {
+    padding: 15px;
+    margin-bottom: 10px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    cursor: pointer;
+    transition: background 0.2s;
+    border: 1px solid transparent;
+}
+
+.result-item:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+.result-name {
+    font-weight: 600;
+    font-size: 1rem;
+    color: #fff;
+}
+
+.result-path {
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.5);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
