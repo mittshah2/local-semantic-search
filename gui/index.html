@@ -10,6 +10,20 @@
 </head>
 
 <body>
+    <!-- Loading Screen -->
+    <div id="loading-screen" class="loading-screen">
+        <div class="loading-content">
+            <div class="orbit-loader">
+                <div class="orbit"></div>
+                <div class="orbit"></div>
+                <div class="orbit"></div>
+                <div class="core"></div>
+            </div>
+            <p class="loading-text">Initializing Semantic Search...</p>
+            <p class="loading-subtext">Loading AI Model</p>
+        </div>
+    </div>
+
     <div id="canvas-container"></div>
 
     <div class="ui-container">
@@ -23,7 +37,6 @@
                     <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
                 </svg>
             </div>
-            <div id="status-text" class="status-text"></div>
         </div>
 
         <div class="results-container" id="results-container">
