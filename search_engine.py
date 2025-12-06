@@ -2,12 +2,14 @@ import os
 import numpy as np
 import threading
 from sentence_transformers import SentenceTransformer
+from datetime import datetime
 
 import pickle
 
 # Path to search
 SEARCH_ROOT = r"C:\Users\Mitt"
 CACHE_FILE = os.path.join(os.path.dirname(__file__), 'search_cache.pkl')
+LOG_FILE = os.path.join(os.path.dirname(__file__), 'embeddings_log.txt')
 EXCLUDED_PATHS = [
     r"C:\Users\Mitt\AppData",
     r"C:\Users\Mitt\ScStore",
@@ -29,6 +31,23 @@ class SearchEngine:
 
     def get_status(self):
         return self.status
+
+    def _log_paths_async(self, paths):
+        """Log paths to file asynchronously so it doesn't block anything."""
+        def write_log():
+            try:
+                timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                with open(LOG_FILE, 'a', encoding='utf-8') as f:
+                    f.write(f"\n--- Embeddings computed at {timestamp} ---\n")
+                    for path in paths:
+                        f.write(f"{path}\n")
+                print(f"Logged {len(paths)} paths to {LOG_FILE}")
+            except Exception as e:
+                print(f"Error writing log: {e}")
+        
+        log_thread = threading.Thread(target=write_log)
+        log_thread.daemon = True
+        log_thread.start()
 
     def _initialize_backend(self):
         print("Loading Model...")
@@ -154,6 +173,9 @@ class SearchEngine:
         self.status = "Ready"
         print("Background update complete. Cache saved.")
         self._save_cache()
+        
+        # Log the new paths asynchronously
+        self._log_paths_async(new_paths)
 
     def _filter_cache(self):
         """Remove excluded paths from the loaded cache to avoid showing unwanted files."""
