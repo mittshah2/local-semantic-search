@@ -5,7 +5,7 @@ from sentence_transformers import SentenceTransformer
 from datetime import datetime
 import pickle
 
-from settings import SEARCH_ROOT, EXCLUDED_PATHS
+from settings import SEARCH_ROOT, EXCLUDED_PATHS, SEARCH_TOP_K
 from path_classifier import get_classifier
 
 # Data paths
@@ -256,7 +256,7 @@ class SearchEngine:
         # sentence-transformers encoding is optimized and simpler
         self.embeddings = self.model.encode(self.file_names, convert_to_numpy=True, show_progress_bar=True)
 
-    def search(self, query, top_k=10):
+    def search(self, query, top_k=SEARCH_TOP_K):
         if not self.is_ready:
             return [{"name": "System Initializing...", "path": "Please wait for model to load."}]
         

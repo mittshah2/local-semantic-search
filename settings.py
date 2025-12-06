@@ -93,6 +93,9 @@ EXCLUDED_EXTENSIONS = [
 CLASSIFIER_TYPE = 'heuristic'  # Options: 'heuristic', future: 'ml'
 RELEVANCE_THRESHOLD = 0.5  # Score threshold for heuristic classifier
 
+# Search settings
+SEARCH_TOP_K = 5  # Number of results to return
+
 # Positive signals for heuristic classifier
 POSITIVE_EXTENSIONS = {
     '.pdf', '.doc', '.docx', '.xls', '.xlsx', '.ppt', '.pptx',
