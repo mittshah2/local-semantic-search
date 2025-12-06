@@ -3,19 +3,15 @@ import numpy as np
 import threading
 from sentence_transformers import SentenceTransformer
 from datetime import datetime
-
 import pickle
 
-# Path to search
-SEARCH_ROOT = r"C:\Users\Mitt"
+from settings import SEARCH_ROOT, EXCLUDED_PATHS
+from path_classifier import get_classifier
+
+# Data paths
 DATA_DIR = os.path.join(os.path.dirname(__file__), 'data')
 CACHE_FILE = os.path.join(DATA_DIR, 'search_cache.pkl')
 LOG_FILE = os.path.join(DATA_DIR, 'embeddings_log.txt')
-EXCLUDED_PATHS = [
-    r"C:\Users\Mitt\AppData",
-    r"C:\Users\Mitt\ScStore",
-    r"C:\Users\Mitt\Searches"
-]
 
 class SearchEngine:
     def __init__(self):
@@ -25,6 +21,7 @@ class SearchEngine:
         self.model = None
         self.is_ready = False
         self.status = "Initializing..."
+        self.classifier = get_classifier()  # Path relevance classifier
         
         # Load model in a separate thread so UI opens fast
         self.init_thread = threading.Thread(target=self._initialize_backend)
@@ -88,7 +85,7 @@ class SearchEngine:
         
         try:
             for root, dirs, files in os.walk(SEARCH_ROOT):
-                # Check exclusions
+                # Check exclusions for root
                 is_excluded_root = False
                 for excluded in EXCLUDED_PATHS:
                     if root.lower().startswith(excluded.lower()):
@@ -98,28 +95,35 @@ class SearchEngine:
                     dirs[:] = []
                     continue
 
-                dirs[:] = [d for d in dirs if not d.startswith('.')]
-                
-                # Filter dirs
+                # Filter directories using classifier
                 valid_dirs = []
                 for d in dirs:
+                    if d.startswith('.'):
+                        continue
                     full_path = os.path.join(root, d)
+                    # Check absolute path exclusions
                     should_exclude = False
                     for excluded in EXCLUDED_PATHS:
                         if full_path.lower() == excluded.lower():
                             should_exclude = True
                             break
-                    if not should_exclude:
+                    if should_exclude:
+                        continue
+                    # Use classifier
+                    if self.classifier.is_relevant(full_path):
                         valid_dirs.append(d)
+                        current_paths.append(full_path)
+                        current_names.append(d)
                 dirs[:] = valid_dirs
                 
-                for d in dirs:
-                    current_paths.append(os.path.join(root, d))
-                    current_names.append(d)
+                # Filter files using classifier
                 for f in files:
-                    if f.startswith('.'): continue
-                    current_paths.append(os.path.join(root, f))
-                    current_names.append(f)
+                    if f.startswith('.'):
+                        continue
+                    full_path = os.path.join(root, f)
+                    if self.classifier.is_relevant(full_path):
+                        current_paths.append(full_path)
+                        current_names.append(f)
         except Exception as e:
             print(f"Error in background scan: {e}")
             return
@@ -206,6 +210,7 @@ class SearchEngine:
 
     def _save_cache(self):
         print("Saving cache...")
+        prev_status = self.status
         self.status = "Saving Cache..."
         try:
             data = {
@@ -218,6 +223,12 @@ class SearchEngine:
             print("Cache saved.")
         except Exception as e:
             print(f"Error saving cache: {e}")
+        finally:
+            # Restore status (or set to Ready if we were already ready)
+            if self.is_ready:
+                self.status = "Ready"
+            else:
+                self.status = prev_status
 
     def _load_cache(self):
         if not os.path.exists(CACHE_FILE):
