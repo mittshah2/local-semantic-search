@@ -8,8 +8,9 @@ import pickle
 
 # Path to search
 SEARCH_ROOT = r"C:\Users\Mitt"
-CACHE_FILE = os.path.join(os.path.dirname(__file__), 'search_cache.pkl')
-LOG_FILE = os.path.join(os.path.dirname(__file__), 'embeddings_log.txt')
+DATA_DIR = os.path.join(os.path.dirname(__file__), 'data')
+CACHE_FILE = os.path.join(DATA_DIR, 'search_cache.pkl')
+LOG_FILE = os.path.join(DATA_DIR, 'embeddings_log.txt')
 EXCLUDED_PATHS = [
     r"C:\Users\Mitt\AppData",
     r"C:\Users\Mitt\ScStore",
