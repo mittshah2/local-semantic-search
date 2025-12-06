@@ -202,9 +202,21 @@ function checkReadyStatus() {
 }
 
 // Poll for ready status
-const readyCheckInterval = setInterval(() => {
-    checkReadyStatus();
-    if (loadingScreen.classList.contains('hidden')) {
-        clearInterval(readyCheckInterval);
-    }
-}, 500);
+function startStatusPolling() {
+    const readyCheckInterval = setInterval(() => {
+        checkReadyStatus();
+        if (loadingScreen.classList.contains('hidden')) {
+            clearInterval(readyCheckInterval);
+        }
+    }, 500);
+}
+
+// Wait for pywebview API to be available
+if (window.pywebview && window.pywebview.api) {
+    startStatusPolling();
+} else {
+    // Wait a bit for pywebview to initialize
+    setTimeout(() => {
+        startStatusPolling();
+    }, 1000);
+}
