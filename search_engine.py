@@ -25,6 +25,7 @@ class SearchEngine:
         
         # Load model in a separate thread so UI opens fast
         self.init_thread = threading.Thread(target=self._initialize_backend)
+        self.init_thread.daemon = True
         self.init_thread.start()
 
     def get_status(self):
@@ -189,14 +190,7 @@ class SearchEngine:
 
         indices_to_keep = []
         for i, path in enumerate(self.file_paths):
-            should_exclude = False
-            for excluded in EXCLUDED_PATHS:
-                # Check if path starts with excluded path (case insensitive for Windows)
-                if path.lower().startswith(excluded.lower()):
-                    should_exclude = True
-                    break
-            
-            if not should_exclude:
+            if self.classifier.is_relevant(path):
                 indices_to_keep.append(i)
         
         if len(indices_to_keep) < len(self.file_paths):
