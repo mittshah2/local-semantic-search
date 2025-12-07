@@ -88,7 +88,12 @@ EXCLUDED_EXTENSIONS = [
     '.jar',
     '.war',
     '.res',
-    '.voucher'
+    '.voucher',
+    '.dat',
+    '.lnk',
+    '.azw',
+    '.mbpV2',
+    '.phl'
 ]
 
 # Classifier settings
