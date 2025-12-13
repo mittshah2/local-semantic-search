@@ -9,7 +9,7 @@ def create_desktop_shortcut():
     
     # Paths in the project
     cwd = os.getcwd()
-    venv_python = os.path.join(cwd, "venv", "Scripts", "python.exe")  # Use python.exe to show console for progress
+    venv_python = os.path.join(cwd, "venv", "Scripts", "pythonw.exe")  # Use pythonw.exe to hide console
     target_script = os.path.join(cwd, "main.py")
     
     shell = Dispatch('WScript.Shell')
