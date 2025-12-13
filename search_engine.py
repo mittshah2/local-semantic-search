@@ -59,12 +59,16 @@ class SearchEngine:
                 print("Loaded index from cache.")
                 self.is_ready = True
                 self.status = "Ready"
+                # 2. Start Background Update (New Files)
+                update_thread = threading.Thread(target=self._update_index_background)
+                update_thread.daemon = True
+                update_thread.start()
+            else:
+                self.status = "Creating embedding for the first time..."
+                self._update_index_background()
+                self.is_ready = True
+                self.status = "Ready"
             
-            # 2. Start Background Update (New Files)
-            update_thread = threading.Thread(target=self._update_index_background)
-            update_thread.daemon = True
-            update_thread.start()
-
         except Exception as e:
             print(f"Error initializing model: {e}")
             self.status = f"Error: {str(e)}"
@@ -161,7 +165,6 @@ class SearchEngine:
         self.status = "Ready"
         print("Background update complete. Cache saved.")
         self._save_cache()
-        self._load_cache()
         
         # Log the new paths asynchronously
         self._log_paths_async(new_paths)
