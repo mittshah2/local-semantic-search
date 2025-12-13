@@ -2,6 +2,12 @@
 Settings file for Semantic Search application.
 All configurable patterns and options are defined here.
 """
+import os
+# Data paths
+DATA_DIR = os.path.join(os.path.dirname(__file__), 'data')
+CACHE_FILE = os.path.join(DATA_DIR, 'search_cache.pkl')
+LOG_FILE = os.path.join(DATA_DIR, 'embeddings_log.txt')
+MODEL_CACHE_DIR = os.path.join(DATA_DIR, 'model')
 
 # Root path to search
 SEARCH_ROOT = r"C:\Users\Mitt"

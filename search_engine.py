@@ -7,10 +7,13 @@ import pickle
 from settings import SEARCH_ROOT, SEARCH_TOP_K
 from path_classifier import get_classifier
 
-# Data paths
-DATA_DIR = os.path.join(os.path.dirname(__file__), 'data')
-CACHE_FILE = os.path.join(DATA_DIR, 'search_cache.pkl')
-LOG_FILE = os.path.join(DATA_DIR, 'embeddings_log.txt')
+from settings import (
+    CACHE_FILE,
+    LOG_FILE,
+    MODEL_CACHE_DIR,
+    DATA_DIR
+)
+
 
 class SearchEngine:
     def __init__(self):
@@ -49,10 +52,19 @@ class SearchEngine:
 
     def _initialize_backend(self):
         print("Loading Model...")
-        self.status = "Downloading Model..."
+        self.status = "Loading Model..."
         try:
             from sentence_transformers import SentenceTransformer
-            self.model = SentenceTransformer('all-MiniLM-L6-v2')
+            
+            if os.path.exists(MODEL_CACHE_DIR):
+                print(f"Loading model from local cache: {MODEL_CACHE_DIR}")
+                self.model = SentenceTransformer(MODEL_CACHE_DIR)
+            else:
+                print("Downloading model...")
+                self.status = "Downloading Model..."
+                self.model = SentenceTransformer('all-MiniLM-L6-v2')
+                print(f"Saving model to local cache: {MODEL_CACHE_DIR}")
+                self.model.save(MODEL_CACHE_DIR)
 
             # 1. Load Cache & Ready Up Immediately
             if self._load_cache():
