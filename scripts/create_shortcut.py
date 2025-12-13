@@ -8,9 +8,12 @@ def create_desktop_shortcut():
     path = os.path.join(desktop, "Semantic Search.lnk")
     
     # Paths in the project
-    cwd = os.getcwd()
-    venv_python = os.path.join(cwd, "venv", "Scripts", "pythonw.exe")  # Use pythonw.exe to hide console
-    target_script = os.path.join(cwd, "main.py")
+    # cwd is now the 'scripts' folder if run from there, or we should resolve relative to file
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    project_root = os.path.dirname(script_dir)
+    
+    venv_python = os.path.join(project_root, "venv", "Scripts", "pythonw.exe")  # Use pythonw.exe to hide console
+    target_script = os.path.join(project_root, "main.py")
     
     shell = Dispatch('WScript.Shell')
     shortcut = shell.CreateShortCut(path)
@@ -20,7 +23,11 @@ def create_desktop_shortcut():
     # Arguments are the script to run
     shortcut.Arguments = f'"{target_script}"'
     # Working directory is the project folder
-    shortcut.WorkingDirectory = cwd
+    shortcut.WorkingDirectory = project_root
+    
+    # Set Icon
+    icon_path = os.path.join(project_root, "resources", "app_icon.ico")
+    shortcut.IconLocation = icon_path
     
     shortcut.save()
     print(f"Shortcut created at: {path}")
