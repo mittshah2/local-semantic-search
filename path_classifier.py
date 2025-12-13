@@ -17,6 +17,7 @@ from settings import (
     POSITIVE_EXTENSIONS,
     POSITIVE_NAMES,
     POSITIVE_FOLDERS,
+    EXCLUDED_PATHS,
 )
 
 
@@ -47,7 +48,18 @@ class PathClassifierBase(ABC):
             True if path should be excluded
         """
         path_lower = path.lower()
+        
+        # Check absolute excluded paths
+        for excluded in EXCLUDED_PATHS:
+            if path_lower.startswith(excluded.lower()):
+                return True
+
         path_parts = path_lower.replace('/', '\\').split('\\')
+        filename = os.path.basename(path)
+
+        # Check hidden files/folders
+        if filename.startswith('.'):
+            return True
         
         # Check each path component against patterns
         for part in path_parts:

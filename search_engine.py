@@ -4,7 +4,7 @@ import threading
 from datetime import datetime
 import pickle
 
-from settings import SEARCH_ROOT, EXCLUDED_PATHS, SEARCH_TOP_K
+from settings import SEARCH_ROOT, SEARCH_TOP_K
 from path_classifier import get_classifier
 
 # Data paths
@@ -57,7 +57,6 @@ class SearchEngine:
             # 1. Load Cache & Ready Up Immediately
             if self._load_cache():
                 print("Loaded index from cache.")
-                self._filter_cache()
                 self.is_ready = True
                 self.status = "Ready"
             
@@ -88,30 +87,14 @@ class SearchEngine:
         try:
             for root, dirs, files in os.walk(SEARCH_ROOT):
                 # Check exclusions for root
-                is_excluded_root = False
-                for excluded in EXCLUDED_PATHS:
-                    if root.lower().startswith(excluded.lower()):
-                        is_excluded_root = True
-                        break
-                if is_excluded_root:
+                if self.classifier.matches_excluded_pattern(root):
                     dirs[:] = []
                     continue
 
                 # Filter directories using classifier
                 valid_dirs = []
                 for d in dirs:
-                    if d.startswith('.'):
-                        continue
                     full_path = os.path.join(root, d)
-                    # Check absolute path exclusions
-                    should_exclude = False
-                    for excluded in EXCLUDED_PATHS:
-                        if full_path.lower() == excluded.lower():
-                            should_exclude = True
-                            break
-                    if should_exclude:
-                        continue
-                    # Use classifier
                     if self.classifier.is_relevant(full_path):
                         valid_dirs.append(d)
                         current_paths.append(full_path)
@@ -120,8 +103,6 @@ class SearchEngine:
                 
                 # Filter files using classifier
                 for f in files:
-                    if f.startswith('.'):
-                        continue
                     full_path = os.path.join(root, f)
                     if self.classifier.is_relevant(full_path):
                         current_paths.append(full_path)
@@ -180,6 +161,7 @@ class SearchEngine:
         self.status = "Ready"
         print("Background update complete. Cache saved.")
         self._save_cache()
+        self._load_cache()
         
         # Log the new paths asynchronously
         self._log_paths_async(new_paths)
