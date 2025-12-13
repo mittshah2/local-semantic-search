@@ -1,7 +1,6 @@
 import os
-import numpy as np
+
 import threading
-from sentence_transformers import SentenceTransformer
 from datetime import datetime
 import pickle
 
@@ -52,6 +51,7 @@ class SearchEngine:
         print("Loading Model...")
         self.status = "Downloading Model..."
         try:
+            from sentence_transformers import SentenceTransformer
             self.model = SentenceTransformer('all-MiniLM-L6-v2')
 
             # 1. Load Cache & Ready Up Immediately
@@ -72,6 +72,7 @@ class SearchEngine:
 
     def _update_index_background(self):
         """Walks FS in background, finds new files, computes embeddings, and updates state."""
+        import numpy as np
         print("Starting background index update...")
         if self.is_ready:
             self.status = "Ready (Scanning for new files...)"
@@ -251,6 +252,7 @@ class SearchEngine:
         self.embeddings = self.model.encode(self.file_names, convert_to_numpy=True, show_progress_bar=True)
 
     def search(self, query, top_k=SEARCH_TOP_K):
+        import numpy as np
         if not self.is_ready:
             return [{"name": "System Initializing...", "path": "Please wait for model to load."}]
         
