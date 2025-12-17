@@ -21,7 +21,16 @@ class Api:
         else:
             print("File not found.")
 
+import ctypes
+from settings import APP_ID
+
 def main():
+    # Set AppUserModelID to group window with shortcut
+    try:
+        ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(APP_ID)
+    except Exception as e:
+        print(f"Failed to set AppUserModelID: {e}")
+
     api = Api()
     
     # Get absolute path to index.html

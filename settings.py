@@ -9,6 +9,10 @@ CACHE_FILE = os.path.join(DATA_DIR, 'search_cache.pkl')
 LOG_FILE = os.path.join(DATA_DIR, 'embeddings_log.txt')
 MODEL_CACHE_DIR = os.path.join(DATA_DIR, 'model')
 
+# Application ID for Windows Taskbar grouping
+APP_ID = 'mittshah.localsemanticsearch.gui.1.0'
+
+
 # Root path to search
 SEARCH_ROOT = r"C:\Users\Mitt"
 
